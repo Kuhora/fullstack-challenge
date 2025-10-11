@@ -1,0 +1,21 @@
+{
+  "name": "collaborative-task-management",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean",
+    "type-check": "turbo run type-check"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "turbo": "latest",
+    "typescript": "^5.9.2"
+  },
+  "packageManager": "pnpm@10.15.0"
+}
