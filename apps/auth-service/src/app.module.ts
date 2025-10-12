@@ -1,12 +1,13 @@
-// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ProxyModule } from './proxy/proxy.module';
+import { AuthModule } from './auth/auth.module';
+import { ProxyModule } from '../../api-gateway/src/proxy/proxy.module';
 
 @Module({
-  imports: [
+    imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     ProxyModule,
-  ],
+    AuthModule,
+    ],
 })
 export class AppModule {}
