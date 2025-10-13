@@ -8,14 +8,15 @@ async function bootstrap() {
     app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
     options: {
-        urls: [process.env.RABBITMQ_URL ?? 'amqp://admin:admin@rabbitmq:5672'],
+        urls: [process.env.RABBITMQ_URL || 'amqp://admin:admin@localhost:5672'],
         queue: 'tasks_queue',
         queueOptions: { durable: false },
-        },
+    },
     });
 
     await app.startAllMicroservices();
-    await app.listen(process.env.PORT || 3003);
-    console.log(`Tasks service running on port ${process.env.PORT || 3003}`);
+    await app.listen(3003);
+    console.log('Tasks Service running on port 3003');
 }
+
 bootstrap();
