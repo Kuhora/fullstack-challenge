@@ -1,12 +1,10 @@
-// src/app.module.ts
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { ProxyModule } from './proxy/proxy.module';
+import { TasksController } from './controllers/tasks.controller';
+import { CommentsController } from './controllers/comments.controller';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    ProxyModule,
-  ],
+  imports: [ProxyModule],
+  controllers: [TasksController, CommentsController],
 })
 export class AppModule {}

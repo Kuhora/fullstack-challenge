@@ -1,6 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Comment } from './comment.entity';
-import { TaskHistory } from './task-history.entity';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+
+export enum TaskStatus {
+    TODO = 'TODO',
+    IN_PROGRESS = 'IN_PROGRESS',
+    DONE = 'DONE',
+}
+
+export enum TaskPriority {
+    LOW = 'LOW',
+    MEDIUM = 'MEDIUM',
+    HIGH = 'HIGH',
+}
 
 @Entity()
 export class Task {
@@ -11,23 +21,17 @@ export class Task {
     title!: string;
 
     @Column({ nullable: true })
-    description!: string;
+    description?: string;
 
-    @Column({ default: 'pending' })
-    status!: string;
+    @Column({ type: 'enum', enum: TaskStatus, default: TaskStatus.TODO })
+    status!: TaskStatus;
 
-    @Column({ default: 'medium' })
-    priority!: string;
+    @Column({ type: 'enum', enum: TaskPriority, default: TaskPriority.MEDIUM })
+    priority!: TaskPriority;
 
-    @Column({ type: 'timestamp', nullable: true })
-    dueDate!: Date;
+    @Column({ nullable: true })
+    dueDate?: string;
 
     @Column()
     createdBy!: string;
-
-    @OneToMany(() => Comment, (comment) => comment.task)
-    comments!: Comment[];
-
-    @OneToMany(() => TaskHistory, (history) => history.task)
-    histories!: TaskHistory[];
 }

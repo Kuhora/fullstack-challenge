@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Task } from './task.entity';
 
 @Entity()
@@ -12,6 +12,10 @@ export class Comment {
     @Column()
     author!: string;
 
-    @ManyToOne(() => Task, (task) => task.comments, { onDelete: 'CASCADE' })
+    @ManyToOne(() => Task)
+    @JoinColumn({ name: 'taskId' })
     task!: Task;
+
+    @Column()
+    taskId!: string;
 }

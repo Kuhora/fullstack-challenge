@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
-import { Task } from './task.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity()
 export class TaskHistory {
@@ -10,17 +9,14 @@ export class TaskHistory {
     field!: string;
 
     @Column({ nullable: true })
-    from!: string;
+    from?: string;
 
     @Column({ nullable: true })
-    to!: string;
+    to?: string;
 
     @Column()
     user!: string;
 
     @CreateDateColumn()
     createdAt!: Date;
-
-    @ManyToOne(() => Task, (task) => task.histories, { onDelete: 'CASCADE' })
-    task!: Task;
 }
