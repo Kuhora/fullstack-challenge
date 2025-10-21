@@ -1,0 +1,33 @@
+{
+    "name": "notifications-service",
+    "version": "1.0.0",
+    "description": "Notifications microservice for Trello 2.0 — handles real-time updates via RabbitMQ + WebSocket",
+    "author": "Matheus",
+    "license": "MIT",
+    "scripts": {
+        "start": "nest start",
+        "start:dev": "nest start --watch",
+        "start:debug": "nest start --debug --watch",
+        "build": "nest build"
+    },
+    "dependencies": {
+        "@nestjs/common": "^11.1.6",
+        "@nestjs/core": "^11.1.6",
+        "@nestjs/platform-socket.io": "^11.1.6",
+        "@nestjs/websockets": "^11.1.6",
+        "amqplib": "^0.10.3",
+        "reflect-metadata": "^0.2.2",
+        "rxjs": "^7.8.1",
+        "socket.io": "^4.7.5"
+    },
+    "devDependencies": {
+        "@nestjs/cli": "^11.0.0",
+        "@nestjs/schematics": "^11.0.0",
+        "@nestjs/testing": "^11.1.6",
+        "@types/amqplib": "^0.10.7",
+        "@types/node": "^20.12.8",
+        "@types/socket.io": "^3.0.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.4.5"
+    }
+}
