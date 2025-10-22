@@ -22,4 +22,9 @@ export class NotificationsController {
     markAsRead(@Param('id') id: string) {
     return this.notificationsService.markAsRead(id);
     }
+    @Get('unread')
+    @ApiQuery({ name: 'userId', required: true })
+    getUnread(@Query('userId') userId: string) {
+    return this.notificationsService.findUnreadByUser(userId);
+}
 }

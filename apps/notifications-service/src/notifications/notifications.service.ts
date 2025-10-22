@@ -71,4 +71,10 @@ export class NotificationsService {
     notif.isRead = true;
     return this.notifRepo.save(notif);
     }
+    async findUnreadByUser(userId: string) {
+    return this.notifRepo.find({
+    where: { userId, isRead: false },
+    order: { createdAt: 'DESC' },
+    });
+}
 }
