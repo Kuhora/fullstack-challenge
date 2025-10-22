@@ -1,39 +1,25 @@
-// src/notifications/notifications.controller.ts
-import { Controller, Post, Body, Logger } from '@nestjs/common';
-import * as amqp from 'amqplib';
+import { Controller, Get, Put, Param, Query } from '@nestjs/common';
+import { NotificationsService } from './notifications.service';
+import { ApiTags, ApiQuery, ApiParam } from '@nestjs/swagger';
 
+@ApiTags('notifications')
 @Controller('notifications')
 export class NotificationsController {
-    private channel!: amqp.Channel;
-    private logger = new Logger(NotificationsController.name);
-
-    constructor() {
-    this.init();
+    constructor(private readonly notificationsService: NotificationsService) {}
+    @Get()
+    @ApiQuery({ name: 'userId', required: true, description: 'ID do usuário' })
+    @ApiQuery({ name: 'page', required: false, description: 'Página (padrão: 1)' })
+    @ApiQuery({ name: 'limit', required: false, description: 'Limite por página (padrão: 10)' })
+    findByUser(
+    @Query('userId') userId: string,
+    @Query('page') page = '1',
+    @Query('limit') limit = '10',
+    ) {
+    return this.notificationsService.findAllByUser(userId, Number(page), Number(limit));
     }
-
-    async init() {
-    try {
-        const rabbitHost = process.env.RABBIT_HOST ?? 'rabbitmq';
-        const connection = await amqp.connect(`amqp://${rabbitHost}:5672`);
-        this.channel = await connection.createChannel();
-        await this.channel.assertExchange('tasks', 'topic', { durable: true });
-        this.logger.log('✅ NotificationsController connected to RabbitMQ');
-    } catch (error) {
-        this.logger.error('❌ Error connecting to RabbitMQ in controller:', error);
-    }
-    }
-
-    @Post('test')
-    async sendTestEvent(@Body() body: any) {
-    const event = {
-        type: body.type ?? 'task.created',
-        task: body.task ?? { title: body.message ?? 'New task' },
-        userId: body.userId ?? 1,
-        message: body.message ?? `Test event ${new Date().toISOString()}`
-    };
-    const routingKey = body.routingKey ?? 'task.created';
-    this.channel.publish('tasks', routingKey, Buffer.from(JSON.stringify(event)));
-    this.logger.log('Published test event:', event);
-    return { message: 'Event published successfully!', event };
+    @Put(':id/read')
+    @ApiParam({ name: 'id', required: true, description: 'ID da notificação' })
+    markAsRead(@Param('id') id: string) {
+    return this.notificationsService.markAsRead(id);
     }
 }

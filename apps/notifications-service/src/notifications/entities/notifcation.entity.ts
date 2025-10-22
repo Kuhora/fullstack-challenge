@@ -1,8 +1,23 @@
-export class Notification {
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index } from 'typeorm';
+
+@Entity('notifications')
+export class NotificationEntity {
+    @PrimaryGeneratedColumn('uuid')
     id!: string;
-    userId!: string | number;
+
+    @Index()
+    @Column({ nullable: false })
+    userId!: string;
+
+    @Column({ nullable: false })
     type!: string;
+
+    @Column({ nullable: false })
     message!: string;
-    createdAt!: Date;
+
+    @Column({ default: false })
     isRead!: boolean;
+
+    @CreateDateColumn()
+    createdAt!: Date;
 }
