@@ -34,4 +34,10 @@ export class Task {
 
     @Column()
     createdBy!: string;
+    
+    @Column({ type: 'int', nullable: true })
+    boardId?: number;
+
+    @Column({ type: 'int', nullable: true })
+    columnId?: number;
 }
