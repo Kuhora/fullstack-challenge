@@ -1,25 +1,25 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Task } from '../entities/task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { EventsService } from '../shared/services/events.service';
-import { MoveTaskDto } from './dto/move-task.dto';
-import { ColumnEntity } from '../boards/entities/column.entity';
 
+interface FilterOptions {
+    status?: string;
+    assignee?: string;
+    q?: string;
+    page?: number;
+    limit?: number;
+}
 @Injectable()
 export class TasksService {
     constructor(
     @InjectRepository(Task)
     private readonly taskRepo: Repository<Task>,
-
     private readonly eventsService: EventsService,
-
-    @InjectRepository(ColumnEntity)
-    private readonly columnsRepo: Repository<ColumnEntity>,
     ) {}
-
     async createTask(createTaskDto: CreateTaskDto) {
     const task = this.taskRepo.create(createTaskDto);
     const savedTask = await this.taskRepo.save(task);
@@ -29,7 +29,6 @@ export class TasksService {
     async updateTask(id: string, updateTaskDto: UpdateTaskDto) {
     const task = await this.taskRepo.findOne({ where: { id } });
     if (!task) throw new NotFoundException('Task not found');
-
     Object.assign(task, updateTaskDto);
     const updatedTask = await this.taskRepo.save(task);
     await this.eventsService.publish('task.updated', updatedTask);
@@ -38,7 +37,6 @@ export class TasksService {
     async deleteTask(id: string) {
     const task = await this.taskRepo.findOne({ where: { id } });
     if (!task) throw new NotFoundException('Task not found');
-
     await this.taskRepo.remove(task);
     await this.eventsService.publish('task.deleted', { id });
     return { message: 'Task deleted', id };
@@ -51,32 +49,26 @@ export class TasksService {
     if (!task) throw new NotFoundException('Task not found');
     return task;
     }
-    async moveTask(id: string, payload: MoveTaskDto) {
-    const task = await this.taskRepo.findOne({ where: { id } });
-    if (!task) throw new NotFoundException('Task not found');
+    async findWithFilters(filters: FilterOptions) {
+    const { status, assignee, q, page = 1, limit = 10 } = filters;
 
-    const fromColumnId = (task as any).columnId ?? null;
-    const fromBoardId = (task as any).boardId ?? null;
+    const qb: SelectQueryBuilder<Task> = this.taskRepo.createQueryBuilder('task');
 
-    if (!payload?.toColumnId) {
-        throw new BadRequestException('toColumnId is required');
-    }
-    const targetColumn = await this.columnsRepo.findOne({ where: { id: payload.toColumnId } });
-    if (!targetColumn) throw new BadRequestException('Target column not found');
-    (task as any).columnId = payload.toColumnId;
-    if (payload.toBoardId) (task as any).boardId = payload.toBoardId;
-    const saved = await this.taskRepo.save(task);
-    await this.eventsService.publish('task.moved', {
-        type: 'task.moved',
-        task: { id: saved.id, title: (saved as any).title ?? null },
-        taskId: saved.id,
-        fromColumnId,
-        toColumnId: saved.columnId,
-        fromBoardId,
-        toBoardId: saved.boardId,
-        userId: payload.userId,
-    });
+    if (status) qb.andWhere('task.status = :status', { status });
+    if (assignee) qb.andWhere('task.assignee = :assignee', { assignee });
+    if (q) qb.andWhere('(task.title LIKE :q OR task.description LIKE :q)', { q: `%${q}%` });
 
-    return saved;
+    qb.skip((page - 1) * limit).take(limit);
+    qb.orderBy('task.createdAt', 'DESC');
+
+    const [items, total] = await qb.getManyAndCount();
+
+    return {
+        items,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+    };
     }
 }

@@ -16,4 +16,5 @@ export class CreateCommentDto {
     @IsString()
     @IsNotEmpty()
     taskId!: string;
+    authorId: any;
 }

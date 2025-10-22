@@ -1,4 +1,3 @@
-// src/notifications/notifications.service.ts
 import { Injectable, Logger } from '@nestjs/common';
 import { Notification } from './entities/notifcation.entity';
 import { WsGateway } from '../ws/ws.gateway';
@@ -45,15 +44,24 @@ export class NotificationsService {
     return this.notifications.filter((n) => `${n.userId}` === `${userId}`);
     }
 
-    private buildMessageFromEvent(type: string, event: any) {
+private buildMessageFromEvent(type: string, event: any) {
+    if (type === 'task.comment.created') {
+    const author = event.comment?.authorId ? `User ${event.comment.authorId}` : 'Someone';
+    const taskTitle = event.task?.title ?? 'a task';
+    const commentSnippet = event.comment?.content
+        ? (event.comment.content.length > 120 ? event.comment.content.slice(0, 120) + '...' : event.comment.content)
+        : '';
+    return `${author} commented on ${taskTitle}${commentSnippet ? `: "${commentSnippet}"` : ''}`;
+    }
+
     if (type.startsWith('task.')) {
-        return event.task?.title ? `Task updated: ${event.task.title}` : event.message ?? 'Task updated';
+    return event.task?.title ? `Task updated: ${event.task.title}` : event.message ?? 'Task updated';
     }
     if (type.startsWith('board.')) {
-        return event.board?.title ? `Board updated: ${event.board.title}` : event.message ?? 'Board updated';
+    return event.board?.title ? `Board updated: ${event.board.title}` : event.message ?? 'Board updated';
     }
     if (type.startsWith('column.')) {
-        return event.column?.title ? `Column updated: ${event.column.title}` : event.message ?? 'Column updated';
+    return event.column?.title ? `Column updated: ${event.column.title}` : event.message ?? 'Column updated';
     }
     return event.message ?? 'You have a new notification';
     }
