@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TasksModule } from './tasks/tasks.module';
 import { Task } from './entities/task.entity';
+import { BoardsModule } from './boards/boards.module';
 import { BoardEntity } from './boards/entities/board.entity';
 import { ColumnEntity } from './boards/entities/column.entity';
 
@@ -20,6 +21,7 @@ import { ColumnEntity } from './boards/entities/column.entity';
         synchronize: true,
     }),
     TasksModule,
+    BoardsModule,
     ],
 })
 export class AppModule {}
