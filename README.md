@@ -36,7 +36,7 @@ This project demonstrates a complete microservices architecture using **NestJS**
 - **WebSocket Gateway** for real-time updates
 - **Docker** + **Docker Compose** for containerized setup
 
-### **Frontend**
+### **Frontend** (Planned for future development.)
 - **React.js (Vite + TypeScript)**
 - **TanStack Router** for routing
 - **Zustand** for global state management
@@ -72,5 +72,6 @@ This project demonstrates a complete microservices architecture using **NestJS**
 | `GET` | `/notifications?userId={id}` | Get paginated notifications for a user |
 | `GET` | `/notifications/unread?userId={id}` | Get unread notifications |
 | `PUT` | `/notifications/:id/read` | Mark a notification as read |
+
 
 
